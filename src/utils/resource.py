@@ -73,6 +73,39 @@ def get_user_data_path(relative_path: str) -> Path:
     return get_user_data_dir() / relative_path
 
 
+def ensure_resource_dir() -> None:
+    """
+    确保资源目录存在（仅在开发环境中）
+    
+    在打包环境中，资源文件已经包含在可执行文件中，不需要创建目录。
+    在开发环境中，确保项目根目录的 data 目录存在。
+    """
+    # 只在开发环境中创建目录
+    if hasattr(sys, "_MEIPASS"):
+        # 打包环境，不需要创建目录
+        return
+    
+    # 开发环境：确保项目根目录的 data 目录存在
+    base_path = Path(__file__).parent.parent.parent
+    data_dir = base_path / "data"
+    
+    # 创建 data 目录（如果不存在）
+    data_dir.mkdir(parents=True, exist_ok=True)
+    
+    # 如果 resume_template.yaml 不存在，尝试从示例文件复制
+    template_path = data_dir / "resume_template.yaml"
+    example_path = data_dir / "resume_template_example.yaml"
+    
+    if not template_path.exists() and example_path.exists():
+        import shutil
+        import logging
+        try:
+            shutil.copy2(example_path, template_path)
+            logging.info(f"已从示例文件创建: {template_path}")
+        except Exception as e:
+            logging.warning(f"无法从示例文件创建模板文件: {e}")
+
+
 def ensure_user_data_from_resource(
     resource_relative_path: str, user_data_filename: Optional[str] = None, force_update: bool = False
 ) -> Path:

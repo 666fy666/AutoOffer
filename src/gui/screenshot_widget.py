@@ -330,8 +330,8 @@ class ScreenshotWidget(QWidget):
             # QByteArray转换为bytes
             from io import BytesIO
 
-            # 将QByteArray转换为bytes
-            image_bytes = byte_array.toBytes()  # type: ignore[attr-defined]
+            # 将QByteArray转换为bytes（PySide6中QByteArray可以直接转换为bytes）
+            image_bytes = bytes(byte_array)
             pil_image: Image.Image = Image.open(BytesIO(image_bytes))
             pil_image = pil_image.convert("RGB")
 

@@ -1,10 +1,11 @@
 """简历模板管理模块"""
 
+import sys
 import yaml  # type: ignore[import-untyped]
 from pathlib import Path
 from typing import Dict, Optional
 from ..utils.logger import get_logger
-from ..utils.resource import ensure_user_data_from_resource
+from ..utils.resource import ensure_user_data_from_resource, get_resource_path
 
 logger = get_logger(__name__)
 
@@ -45,15 +46,23 @@ class ResumeManager:
         初始化简历管理器
 
         Args:
-            template_path: YAML模板文件路径，如果为None，则使用用户数据目录中的文件
+            template_path: YAML模板文件路径，如果为None，则根据环境自动选择：
+                          - 开发环境：使用项目目录下的 data/resume_template.yaml
+                          - 打包环境：使用用户数据目录中的文件
         """
         if template_path is None:
-            # 使用用户数据目录，确保文件存在（如果不存在则从资源文件复制）
-            self.template_path = ensure_user_data_from_resource(
-                "data/resume_template.yaml", "resume_template.yaml"
-            )
-            # 检查是否需要从资源文件更新（如果用户数据文件字段较少）
-            self._check_and_update_from_resource()
+            # 检查是否在打包环境中
+            if hasattr(sys, "_MEIPASS"):
+                # 打包环境：使用用户数据目录，确保文件存在（如果不存在则从资源文件复制）
+                self.template_path = ensure_user_data_from_resource(
+                    "data/resume_template.yaml", "resume_template.yaml"
+                )
+                # 检查是否需要从资源文件更新（如果用户数据文件字段较少）
+                self._check_and_update_from_resource()
+            else:
+                # 开发环境：直接使用项目目录下的 data/resume_template.yaml
+                self.template_path = get_resource_path("data/resume_template.yaml")
+                logger.info(f"开发环境：使用项目目录下的模板文件: {self.template_path}")
         else:
             self.template_path = Path(template_path)
 

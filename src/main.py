@@ -15,6 +15,7 @@ from src.gui.selection_dialog import SelectionDialog
 from src.gui.toast import ToastWidget
 from src.utils.hotkey import HotkeyManager
 from src.utils.logger import get_logger
+from src.utils.resource import ensure_resource_dir
 
 logger = get_logger(__name__)
 
@@ -194,6 +195,9 @@ class Application:
 
 def main():
     """主函数"""
+    # 确保资源目录存在（仅在开发环境中）
+    ensure_resource_dir()
+    
     app = Application()
     app.run()
 
