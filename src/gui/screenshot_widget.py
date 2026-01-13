@@ -1,7 +1,7 @@
 """截图窗口组件"""
 
 from PySide6.QtWidgets import QWidget
-from PySide6.QtCore import Qt, QRect, QPoint, Signal, QBuffer, QIODevice
+from PySide6.QtCore import Qt, QRect, QPoint, Signal, QBuffer, QIODevice, QEvent
 from PySide6.QtGui import QPainter, QColor, QPen, QGuiApplication, QPixmap
 from PIL import Image
 from ..utils.logger import get_logger
@@ -23,7 +23,7 @@ class ScreenshotWidget(QWidget):
         self.screenshot_pixmap = None
         self.virtual_geometry = QRect()  # 虚拟桌面几何信息
         self._init_ui()
-        self._capture_screen()
+        # 不在初始化时捕获屏幕，而是在显示窗口之前捕获
 
     def _init_ui(self):
         """初始化UI"""
@@ -270,6 +270,20 @@ class ScreenshotWidget(QWidget):
 
             # 关闭窗口
             self.close()
+
+    def reset(self):
+        """重置截图状态（清除上一次的选择区域）"""
+        self.start_point = QPoint()
+        self.end_point = QPoint()
+        self.is_selecting = False
+
+    def showEvent(self, event: QEvent):
+        """窗口显示事件：重置状态"""
+        super().showEvent(event)
+        # 重置选择状态，清除上一次的选择区域
+        self.reset()
+        # 更新窗口以清除上一次的选择区域显示
+        self.update()
 
     def keyPressEvent(self, event):
         """键盘事件"""

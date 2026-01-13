@@ -93,11 +93,16 @@ class Application:
             self.screenshot_widget.screenshot_taken.connect(
                 self._on_screenshot_taken
             )
+        
+        # 在显示窗口之前捕获屏幕，确保捕获的是按下快捷键时的桌面状态
+        # 这样即使窗口显示后改变了其他窗口状态，截图内容也不会受影响
+        self.screenshot_widget._capture_screen()
 
         self.screenshot_widget.show()
         self.screenshot_widget.raise_()
         # 注意：不调用 activateWindow()，避免在某些系统上最小化当前活动窗口
         # raise_() 已经足够将置顶窗口显示在最前面
+        # 状态重置会在 showEvent 中自动执行
 
     def _on_screenshot_taken(self, image):
         """截图完成回调"""
