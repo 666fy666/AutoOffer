@@ -96,7 +96,8 @@ class Application:
 
         self.screenshot_widget.show()
         self.screenshot_widget.raise_()
-        self.screenshot_widget.activateWindow()
+        # 注意：不调用 activateWindow()，避免在某些系统上最小化当前活动窗口
+        # raise_() 已经足够将置顶窗口显示在最前面
 
     def _on_screenshot_taken(self, image):
         """截图完成回调"""
