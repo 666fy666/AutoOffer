@@ -41,13 +41,14 @@ jobs:
     
     - name: Determine version
       id: version
+      shell: pwsh
       run: |
-        if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-          VERSION="${{ github.event.inputs.version }}"
-        else
-          VERSION=$(echo "${{ github.ref_name }}" | sed 's/^v//')
-        fi
-        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        if ("${{ github.event_name }}" -eq "workflow_dispatch") {
+          $VERSION = "${{ github.event.inputs.version }}"
+        } else {
+          $VERSION = "${{ github.ref_name }}" -replace "^v", ""
+        }
+        echo "version=$VERSION" >> $env:GITHUB_OUTPUT
         echo "Version: $VERSION"
     
     - name: Check file size
