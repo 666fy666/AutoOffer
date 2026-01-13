@@ -31,6 +31,7 @@ uv run python src/main.py
 
 1. **首次使用**：点击"编辑简历"按钮，添加你的个人信息（姓名、身份证、电话等）
 <img src="src/img/367f916badb226c31e659a76fe7dab56.png" alt="应用截图" width="400">
+
 2. **截图识别**：
    - 按 `Alt+C` 或点击"截图识别"按钮
    - 在网页上选择要识别的标签区域（如"姓名"、"身份证"等）
@@ -39,7 +40,9 @@ uv run python src/main.py
    - 如果只有一个匹配，自动复制到剪切板并显示Toast提醒
    - 如果有多个匹配，弹出选择窗口，选择后复制
 4. **粘贴使用**：在网页表单中按 `Ctrl+V` 粘贴已复制的内容
+
 <img src="src/img/a66799ba-7ca0-46c0-879a-0b6a1632f5e6.png" alt="应用截图" width="400">
+
 ## 预设标签
 
 程序预设了以下常见标签类别：
@@ -49,8 +52,11 @@ uv run python src/main.py
 - 性别、民族、政治面貌、婚姻状况
 - 籍贯、现居住地、期望薪资、求职意向
 - 自我评价、项目经验、获奖情况
+
 <img src="src/img/e82fbd71-db6f-42d0-adad-0475ac7dfbc4.png" alt="应用截图" width="400">
+
 你也可以在"编辑简历"中添加自定义标签。
+
 <img src="src/img/368079ed-fd33-4d01-95fd-c04d196bf6da.png" alt="应用截图" width="400">
 
 
