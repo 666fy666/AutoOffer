@@ -37,6 +37,8 @@ jobs:
       run: uv sync --dev
     
     - name: Build exe
+      env:
+        PYTHONIOENCODING: utf-8
       run: uv run python build.py
     
     - name: Determine version

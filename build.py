@@ -4,6 +4,12 @@ import os
 import sys
 from pathlib import Path
 
+# 设置UTF-8编码，解决Windows环境下的中文输出问题
+if sys.platform == 'win32':
+    import io
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
+
 
 def build_exe():
     """使用PyInstaller打包成exe"""
