@@ -1,0 +1,76 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'  # 当推送以v开头的tag时触发（如 v0.1.0, v1.0.0）
+
+jobs:
+  build:
+    runs-on: windows-latest
+    permissions:
+      contents: write  # 需要写入权限来创建release
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+    
+    - name: Install uv
+      uses: astral-sh/setup-uv@v4
+      with:
+        version: "latest"
+    
+    - name: Install dependencies
+      run: uv sync --dev
+    
+    - name: Build exe
+      run: uv run python build.py
+    
+    - name: Get version from tag
+      id: get_version
+      run: |
+        $tag = "${{ github.ref }}"
+        $version = $tag -replace "refs/tags/v", ""
+        echo "version=$version" >> $env:GITHUB_OUTPUT
+        echo "Tag: $tag, Version: $version"
+    
+    - name: Check file size
+      run: |
+        $file = Get-Item dist/AutoOffer.exe
+        $sizeMB = [math]::Round($file.Length / 1MB, 2)
+        echo "File size: $sizeMB MB"
+        if ($file.Length -gt 100MB) {
+          echo "警告: 文件大小超过100MB，GitHub可能无法上传"
+          exit 1
+        }
+    
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: dist/AutoOffer.exe
+        name: Release ${{ steps.get_version.outputs.version }}
+        body: |
+          ## 版本 ${{ steps.get_version.outputs.version }}
+          
+          ### 下载
+          - [AutoOffer.exe](https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/AutoOffer.exe)
+          
+          ### 使用说明
+          1. 下载 `AutoOffer.exe`
+          2. 双击运行（首次运行可能需要管理员权限）
+          3. 点击"编辑简历"按钮，添加个人信息
+          4. 按 `Alt+C` 或点击"截图识别"按钮开始使用
+          
+          ### 注意事项
+          - 首次运行OCR识别可能需要下载模型文件，请耐心等待
+          - 确保快捷键 `Alt+C` 不与系统或其他应用冲突
+          - 截图功能需要管理员权限（Windows）
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
